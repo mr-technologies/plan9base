@@ -89,6 +89,8 @@ struct Netif
 	int	misses;
 	uvlong	inpackets;
 	uvlong	outpackets;
+        uvlong	inbytes;
+        uvlong	outbytes;
 	int	crcs;		/* input crc errors */
 	int	oerrs;		/* output errors */
 	int	frames;		/* framing errors */
