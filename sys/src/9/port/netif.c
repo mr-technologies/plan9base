@@ -225,6 +225,8 @@ netifread(Netif *nif, Chan *c, void *a, long n, ulong offset)
 		j += snprint(p+j, READSTR-j, "output errs: %d\n", nif->oerrs);
 		j += snprint(p+j, READSTR-j, "prom: %d\n", nif->prom);
 		j += snprint(p+j, READSTR-j, "mbps: %d\n", nif->mbps);
+		j += snprint(p+j, READSTR-j, "inbytes: %llud\n", nif->inbytes);
+		j += snprint(p+j, READSTR-j, "outbytes: %llud\n", nif->outbytes);
 		j += snprint(p+j, READSTR-j, "addr: ");
 		for(i = 0; i < nif->alen; i++)
 			j += snprint(p+j, READSTR-j, "%2.2ux", nif->addr[i]);
