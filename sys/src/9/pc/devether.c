@@ -149,6 +149,8 @@ etheriq(Ether* ether, Block* bp, int fromwire)
 	fx = 0;
 	ep = &ether->f[Ntypes];
 
+         /* Increase byte counter */
+        ether->inbytes += len;
 	multi = pkt->d[0] & 1;
 	/* check for valid multicast addresses */
 	if(multi && memcmp(pkt->d, ether->bcast, sizeof(pkt->d)) != 0 && ether->prom == 0){
@@ -232,7 +234,11 @@ etheroq(Ether* ether, Block* bp)
 	 * by this interface are fed back.
 	 */
 	pkt = (Etherpkt*)bp->rp;
-	len = BLEN(bp);
+        len = BLEN(bp);
+         /* Increase byte counter (maybe we should skip it for
+          * loopback packets, but for now, be consistent with packet
+          * counter) */
+        ether->outbytes += len;
 	loopback = memcmp(pkt->d, ether->ea, sizeof(pkt->d)) == 0;
 	if(loopback || memcmp(pkt->d, ether->bcast, sizeof(pkt->d)) == 0 || ether->prom){
 		s = splhi();
