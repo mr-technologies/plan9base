@@ -175,7 +175,7 @@
 #define PHYSL4WKUP	0x48328100	/* l4 wkup */
 #define PHYSL4PER	0x49000100	/* l4 per */
 
-#define PHYSCONS	0x49020000	/* uart console (third one) */
+#define PHYSCONS	0x10009000	/* uart console (first one) */
 
 #define PHYSWDT3	0x49030000	/* wdt3 */
 #define PHYSTIMER2	0x49032000
