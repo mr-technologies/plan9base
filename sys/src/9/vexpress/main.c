@@ -213,6 +213,8 @@ main(void)
 	memset(edata, 0, end - edata);		/* zero BSS */
 	cacheuwbinv();
 	l2cacheuwbinv();
+	/* akovalenko: flush pl011 */
+	while(!((1<<7) & *(ulong*)(PHYSCONS+0x018))); // loop until Txfe
 
 	if (vfy != 0xcafebabe)
 		panic("data segment misaligned");
