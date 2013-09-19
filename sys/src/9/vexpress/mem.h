@@ -117,7 +117,7 @@
 #define PHYSNAND	1		/* cs0 is onenand flash */
 #define PHYSETHER	0x2c000000
 
-#define PHYSIO		0x48000000	/* L4 ctl */
+#define PHYSIO		0x10000000	/* L4 ctl */
 
 #define PHYSSCM		0x48002000	/* system control module */
 
@@ -183,7 +183,7 @@
 #define PHYSGPIO5	0x49056000
 #define PHYSGPIO6	0x49058000	/* contains igep ether gpio */
 
-#define PHYSIOEND	0x49100000	/* end of PHYSIO identity map */
+#define PHYSIOEND	0x11100000	/* end of PHYSIO identity map */
 
 #define PHYSL4EMU	0x54006100	/* l4 emu */
 #define PHYSL4PROT	0x54728000	/* l4 protection regs */
