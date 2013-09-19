@@ -4,7 +4,7 @@ CONFLIST=beagle
 # allegedly u-boot uses the bottom 3MB (up to 0x300000) so avoid that,
 # and leave 64K for plan9.ini.  loadaddr must match KTZERO in mem.h.
 # 0xc0310000 has worked, 0x80310000 should work but doesn't yet.
-loadaddr=0x80310000
+loadaddr=0xc0310000
 
 objtype=arm
 </$objtype/mkfile
