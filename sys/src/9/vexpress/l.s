@@ -536,10 +536,18 @@ TEXT islo(SB), 1, $-4
 
 TEXT	tas(SB), $-4
 TEXT	_tas(SB), $-4
-	MOVW	R0,R1
-	MOVW	$1,R0
-	SWPW	R0,(R1)			/* fix: deprecated in armv7 */
-	RET
+spintas:
+        LDREX(0,1)
+        CMP.S   $0, R1
+        B.NE    tasnope
+        MOVW    $1, R3
+        STREX(0,3,2)
+        CMP.S   $0, R2
+        B.NE    spintas
+tasnope:
+        CLREX
+        MOVW    R1, R0
+        RET
 
 TEXT clz(SB), $-4
 	CLZ(0, 0)			/* 0 is R0 */
