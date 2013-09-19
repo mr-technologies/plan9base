@@ -52,7 +52,7 @@ WAVE('\n')
 	MCR	CpSC, 0, R1, C(CpCONTROL), C(0), CpAuxctl
 	ISB
 
-	MRC	CpSC, 1, R1, C(CpCLD), C(CpCLDl2), CpCLDl2aux
+	MRC     CpSC, 0, R1, C1, C0, CpCLDl2aux
 	ORR	$CpCl2nowralloc, R1		/* fight cortex errata 460075 */
 	ORR	$(CpCl2ecc|CpCl2eccparity), R1
 #ifdef TEDIUM
@@ -60,7 +60,7 @@ WAVE('\n')
 	 * I don't know why this clobbers the system, but I'm tired
 	 * of arguing with this fussy processor.  To hell with it.
 	 */
-	MCR	CpSC, 1, R1, C(CpCLD), C(CpCLDl2), CpCLDl2aux
+	MCR	CpSC, 0, R1, C1, C0, CpCLDl2aux
 	ISB
 #endif
 	DELAY(printloops, 1)
