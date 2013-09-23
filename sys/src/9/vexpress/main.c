@@ -231,6 +231,7 @@ wave('l');
 	plan9iniinit();		/* before we step on plan9.ini in low memory */
 
 	trapinit();		/* so confinit can probe memory to size it */
+	uartinit();
 	confinit();		/* figures out amount of memory */
 	/* xinit prints (if it can), so finish up the banner here. */
 	delay(500);
