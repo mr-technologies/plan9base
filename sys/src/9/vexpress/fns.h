@@ -82,6 +82,7 @@ extern int tas(void *);
 extern u32int ttbget(void);
 extern void ttbput(u32int);
 extern void watchdoginit(void);
+extern void uartinit(void);
 
 extern int irqenable(int, void (*)(Ureg*, void*), void*, char*);
 extern int irqdisable(int, void (*)(Ureg*, void*), void*, char*);
