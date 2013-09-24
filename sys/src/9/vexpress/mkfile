@@ -1,5 +1,5 @@
-CONF=panda
-CONFLIST=panda
+CONF=vxa9
+CONFLIST=vxa9
 
 loadaddr=0xF2000000
 
