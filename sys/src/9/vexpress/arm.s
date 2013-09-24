@@ -11,7 +11,7 @@
 #define CPSID	WORD	$0xf10c0080	/* intr disable: sets I bit */
 
 #define EWAVE(n)\
-	MOVW	$0x48020000, R0; \
+	MOVW	$0x10009000, R0; \
 	MOVW	$n, R1; \
 	MOVW	R1, (R0);
 

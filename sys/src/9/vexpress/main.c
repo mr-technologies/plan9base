@@ -10,7 +10,7 @@
 #include "tos.h"
 #include "arm.h"
 
-ulong *uart = (ulong *) 0x48020000;
+ulong *uart = (ulong *) 0x10009000;
 #define wave(x) (*uart = (char) (x))
 uintptr kseg0 = KZERO;
 uchar *sp;

@@ -7,10 +7,10 @@ TEXT _start(SB), 1, $-4
 	
 	MOVW	$(PsrDirq | PsrDfiq | PsrMsvc), CPSR
 	
-	MOVW	$0x48020014, R1
+	MOVW	$0x10009018, R1
 uartloop:
 	MOVW	(R1), R0
-	AND.S	$(1<<6), R0
+	AND.S	$(1<<7), R0
 	B.EQ	uartloop
 	
 	EWAVE('\r')
@@ -30,8 +30,8 @@ uartloop:
 	MOVW	$(PHYSDRAM|PTEDRAM), R2
 	MOVW	$256, R3
 	BL	_mapmbs(SB)
-	MOVW	$0x48000000, R1
-	MOVW	$(0x48000000| L1AP(Krw) | Section | PTEIO), R2
+	MOVW	$0x10000000, R1
+	MOVW	$(0x10000000| L1AP(Krw) | Section | PTEIO), R2
 	MOVW	$1, R3
 	BL	_mapmbs(SB)
 	
