@@ -116,7 +116,7 @@ mmuinit(void)
 		l2 += L2SIZ;
 	}
 	uart = vmap((ulong) uart, BY2PG);
-	periph = vmap(0x48240000, 2 * BY2PG);
+	periph = vmap(0x1e000000, 2 * BY2PG);
 	memset(l1, 0, sizeof(ulong) * (IZERO / MiB));
 	l1[4095] = PRIVL2 | Coarse;
 	pl2 = KADDR(PRIVL2);
