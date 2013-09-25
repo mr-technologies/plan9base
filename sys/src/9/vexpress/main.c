@@ -155,7 +155,7 @@ main()
 	machinit();
 	wave('o');
 	mmuinit();
-	gpioinit();
+	/* gpioinit(); */
 	wave('m');
 	trapinit();
 	uartinit();

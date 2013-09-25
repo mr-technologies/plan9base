@@ -97,7 +97,7 @@ vunmap(void *virt, ulong length)
 void
 markidle(int n)
 {
-	setgpio(7 + m->machno, !n);
+	/* setgpio(7 + m->machno, !n); */
 }
 
 void
