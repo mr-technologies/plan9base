@@ -1,7 +1,7 @@
 CONF=vxa9
 CONFLIST=vxa9
 
-loadaddr=0xF2000000
+loadaddr=0xF0310000
 
 objtype=arm
 </$objtype/mkfile

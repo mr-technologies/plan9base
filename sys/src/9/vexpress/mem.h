@@ -15,7 +15,7 @@
 #define FMASK(o, w)	(((1<<(w))-1)<<(o))
 
 #define KZERO		0xF0000000
-#define KTZERO		0xF2000000
+#define KTZERO		0xF0310000
 #define VECTORS		0xFFFF0000
 #define MACHADDR	0xFFFF1000
 
