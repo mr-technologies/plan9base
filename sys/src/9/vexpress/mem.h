@@ -31,6 +31,7 @@
 #define KSTACK		KSTKSIZ
 #define USTKSIZE		(8*MiB)
 #define HZ		100
+#define MS2HZ		(1000/HZ)
 
 #define	MAXSYSARG	7
 #define MAXMACH		2
