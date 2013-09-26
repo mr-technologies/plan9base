@@ -54,7 +54,7 @@
 #define PTEKERNEL	(1<<3)
 
 #define PHYSDRAM	0x80000000
-#define DRAMSIZ		(1024 * MiB)
+#define DRAMSIZ		(512 * MiB)
 
 #define L1PT		PHYSDRAM
 #define L1SIZ		(16 * KiB)
