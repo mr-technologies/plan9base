@@ -62,7 +62,7 @@ misc
 #	uarti8250
 #	ucalloc
 #	ucallocb
-	uartomap
+	uartpl011
 
 port
 	int cpuserver = 1;
