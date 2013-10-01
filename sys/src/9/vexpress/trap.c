@@ -45,9 +45,16 @@ trapinit(void)
 	trapv[15] = (ulong) _fiq;
 	
 	intc = (ulong *) (periph + 0x100);
-	intc[1] = 0;
-	intc[0] |= 1;
 	intd = (ulong *) (periph + 0x1000);
+	for(i=32;i<32*17;i+=16)
+		intd[0xc00/4+i/16]=0;
+	for(i=32;i<32*17;i+=4)
+		intd[0x800/4+i/4]=0x01010101;
+	for(i=0;i<32*17;i+=4)
+		intd[0x400/4+i/4]=0xa0a0a0a0;
+	//intc[1] = 0;
+	intc[1] = 0xf0;
+	intc[0] |= 1;
 	intd[0] |= 1;
 }
 
