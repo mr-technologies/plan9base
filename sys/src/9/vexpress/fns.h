@@ -39,3 +39,5 @@ void	irqroute(int, void(*)(Ureg*, void *), void *);
 void	gpioinit(void);
 void	setgpio(int, int);
 void	gpiomode(int, int);
+#define PTR2UINT(p)	((uintptr)(p))
+#define UINT2PTR(i)	((void*)(i))
