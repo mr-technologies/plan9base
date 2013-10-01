@@ -99,29 +99,22 @@ pl011kick(Uart *u)
 void
 pl011interrupt(Ureg *, void *)
 {
-	ulong st;
+	ulong ris = uart[Mis];
+	//uart[Dr]='/';
 
-	st = uart[2];
-	if((st & 1) != 0)
-		return;
-	switch((st >> 1) & 0x1F){
-	case 0:
-	case 16:
-		puart.cts = (uart[6] & (1<<4)) != 0;
-		puart.dsr = (uart[6] & (1<<5)) != 0;
-		puart.dcd = (uart[6] & (1<<7)) != 0;
-		break;
-	case 1:
+	if (ris & ((1<<6)|(1<<4))) {
+		while(!(uart[Fr] & Rxfe)) {
+			uartrecv(&puart, uart[Dr]);
+			uart[Dr]='~';
+		}
+	}
+	if (ris & (1<<5))
 		uartkick(&puart);
-		break;
-	case 2:
-	case 6:
-		while(uart[5] & 1)
-			uartrecv(&puart, uart[0]);
-		break;
-	default:
-		print("unknown UART interrupt %uld\n", (st>>1) & 0x1F);
-		uartkick(&puart);
+
+	if (ris & ((1<<3)|(1<<2)|(1<<1))) {
+		puart.cts = !(uart[Fr]&CtsC);
+		puart.dsr = !(uart[Fr]&DsrC);
+		puart.dcd = !(uart[Fr]&DcdC);
 	}
 }
 
@@ -131,6 +124,10 @@ pl011enable(Uart *u, int ie)
 	while(uart[Fr] & Busy)
           ;
         uart[Cr]=CtsEn|RtsEn|Rxe|Txe|Ena;
+	if (ie) {
+		uart[Imsc]=(1<<6)|(1<<4);
+		intenable(37,pl011interrupt,u);
+	}
 }
 
 static void
