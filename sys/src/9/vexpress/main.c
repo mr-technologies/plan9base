@@ -147,8 +147,6 @@ userinit(void)
 void
 main()
 {
-	extern int ehcidebug;
-
 	wave('f');
 	memset(edata, 0, end - edata);
 	wave('r');
@@ -169,7 +167,6 @@ main()
 	swapinit();
 	initseg();
 	quotefmtinstall();
-	ehcidebug = 1;
 	links();
 	chandevreset();
 	userinit();
