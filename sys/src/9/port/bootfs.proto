@@ -19,6 +19,7 @@ $objtype
 		grep
 		ip
 			ipconfig
+			ping
 		ls
 		mkdir
 		mntgen
