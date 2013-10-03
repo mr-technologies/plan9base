@@ -14,7 +14,7 @@ static ulong globalcycleshi,globalcycleslo;
 extern uchar *periph;
 ulong *local;
 enum {
-	PERIPHCLK = 506965000,
+	PERIPHCLK = 200000000,
 	MaxPeriod = PERIPHCLK / (256 * 100),
 	MinPeriod = MaxPeriod / 100,
 } ;
