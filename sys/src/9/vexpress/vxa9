@@ -9,19 +9,19 @@ dev
 	srv
 	shr
 	dup
-#	arch
-#	ssl
-#	tls
+	arch
+	ssl
+	tls
 #	bridge		log
 #	sdp		thwack unthwack
-#	cap
+	cap
 #	kprof
 #	aoe
 #	sd
 #	fs
 #	flash
 
-#	ether		netif
+	ether		netif
 	ip		arp chandial ip ipv6 ipaux iproute netlog nullmedium pktmedium ptclbsum inferno
 
 #	draw		screen
