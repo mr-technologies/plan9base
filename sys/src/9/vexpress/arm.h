@@ -31,6 +31,7 @@
 /*
  * Coprocessors
  */
+#define CpOFPA		1			/* ancient 7500 FPA */
 #define CpFP		10			/* float FP, VFP cfg. */
 #define CpDFP		11			/* double FP */
 #define CpSC		15			/* System Control */
@@ -246,3 +247,9 @@
 #define HVECTORS	0xffff0000
 #define PTEDRAM		(L1AP(Krw)|Section|Cached|Buffered)
 #define PTEIO		(ExecuteNever)
+
+/* instruction decoding */
+#define ISCPOP(op)	((op) == 0xE || ((op) & ~1) == 0xC)
+#define ISFPAOP(cp, op)	((cp) == CpOFPA && ISCPOP(op))
+#define ISVFPOP(cp, op)	(((cp) == CpDFP || (cp) == CpFP) && ISCPOP(op))
+
