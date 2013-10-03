@@ -56,6 +56,7 @@
 #define PHYSDRAM	0x80000000
 #define DRAMSIZ		(512 * MiB)
 
+#define PHYSETHER	0x4e000000
 #define L1PT		PHYSDRAM
 #define L1SIZ		(16 * KiB)
 #define IOPT		(L1PT + L1SIZ)
