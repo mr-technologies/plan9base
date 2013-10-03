@@ -44,6 +44,9 @@ OBJ=\
 	main.$O\
 	mmu.$O\
 	clock.$O\
+	fpi.$O\
+	fpiarm.$O\
+	fpimem.$O\
 	arch.$O\
 	trap.$O\
 	$CONF.root.$O\
