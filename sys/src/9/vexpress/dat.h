@@ -147,9 +147,20 @@ extern uintptr kseg0;
 
 #define AOUT_MAGIC (E_MAGIC)
 #define NCOLOR 1
-
+#define NISAOPT 8
 struct ISAConf
 {
 	char *type;
 	ulong port, irq;
+	ulong	dma;
+	ulong	mem;
+	ulong	size;
+	ulong	freq;
+
+	int	nopt;
+	char	*opt[NISAOPT];
+};
+
+enum {
+	Mhz = 1000 * 1000
 };
