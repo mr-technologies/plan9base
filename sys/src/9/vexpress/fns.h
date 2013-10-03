@@ -35,9 +35,13 @@ void	globalclockinit(void);
 void	localclockinit(void);
 void	intenable(int, void(*)(Ureg*, void *), void *);
 void	uartinit(void);
+#define intrenable(i, f, a, b, n)	intenable((i), (f), (a))
 void	irqroute(int, void(*)(Ureg*, void *), void *);
 void	gpioinit(void);
 void	setgpio(int, int);
 void	gpiomode(int, int);
 #define PTR2UINT(p)	((uintptr)(p))
 #define UINT2PTR(i)	((void*)(i))
+#define MASK(v)	((1UL << (v)) - 1)	/* mask `v' bits wide */
+extern int isaconfig(char*, int, ISAConf*);
+extern int fpiarm(Ureg*);
