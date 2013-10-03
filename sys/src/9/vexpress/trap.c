@@ -193,7 +193,6 @@ notify(Ureg *ureg)
 	((ulong*)sp)[2] = sp + 3 * BY2WD;
 	((Ureg**)sp)[1] = up->ureg;
 	((ulong*)sp)[0] = 0;
-	memset(ureg, 0, sizeof *ureg);
 	ureg->psr = PsrMusr;
 	ureg->sp = sp;
 	ureg->pc = (ulong) up->notify;
