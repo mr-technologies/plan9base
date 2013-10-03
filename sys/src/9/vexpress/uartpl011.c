@@ -103,13 +103,15 @@ pl011interrupt(Ureg *, void *)
 	//uart[Dr]='/';
 
 	if (ris & ((1<<6)|(1<<4))) {
+	        uart[Icr]= ris & ((1<<6)|(1<<4));
 		while(!(uart[Fr] & Rxfe)) {
 			uartrecv(&puart, uart[Dr]);
-			uart[Dr]='~';
 		}
 	}
-	if (ris & (1<<5))
+	if (ris & (1<<5)) {
+  	        uart[Icr]=(1<<5);
 		uartkick(&puart);
+	}
 
 	if (ris & ((1<<3)|(1<<2)|(1<<1))) {
 		puart.cts = !(uart[Fr]&CtsC);
@@ -125,7 +127,7 @@ pl011enable(Uart *u, int ie)
           ;
         uart[Cr]=CtsEn|RtsEn|Rxe|Txe|Ena;
 	if (ie) {
-		uart[Imsc]=(1<<6)|(1<<4);
+	        uart[Imsc]=(1<<6)|(1<<4)|(1<<5);
 		intenable(37,pl011interrupt,u);
 	}
 }
