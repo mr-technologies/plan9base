@@ -6,8 +6,13 @@
 #include "fns.h"
 #include "io.h"
 
+extern ulong *uart;
+#define wave(x) (*uart = (char) (x))
+
+static ulong globalcycleshi,globalcycleslo;
+
 extern uchar *periph;
-ulong *global, *local;
+ulong *local;
 enum {
 	PERIPHCLK = 506965000,
 	MaxPeriod = PERIPHCLK / (256 * 100),
@@ -17,27 +22,25 @@ enum {
 void
 globalclockinit(void)
 {
-	global = (ulong*) (periph + 0x200);
 	local = (ulong*) (periph + 0x600);
-	global[2] &= 0xFFFF00F0;
-	global[0] = 0;
-	global[1] = 0;
-	global[2] |= 1;
+	local[8]=0xFFFFFFFF;
+	local[9]=0xFFFFFFFF;
+	local[10]=0x0003;
 }
+
 
 void
 cycles(uvlong *x)
 {
-	ulong hi, newhi, lo, *y;
-	
-	newhi = global[1];
-	do{
-		hi = newhi;
-		lo = global[0];
-	}while((newhi = global[1]) != hi);
+	ulong lo, *y;
+	lo = ~local[9];
+	if (lo < globalcycleslo) {
+		++globalcycleshi;
+	}
+	globalcycleslo=lo;
 	y = (ulong *) x;
 	y[0] = lo;
-	y[1] = hi;
+	y[1] = globalcycleshi;
 }
 
 uvlong
@@ -61,7 +64,7 @@ ulong
 ulong
 perfticks(void)
 {
-	return global[0];
+	return globalcycleslo;
 }
 
 void
