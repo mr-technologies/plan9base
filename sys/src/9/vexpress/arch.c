@@ -9,6 +9,9 @@
 #include "arm.h"
 #include "tos.h"
 
+#include "../port/netif.h"
+#include "etherif.h"
+
 void (*proctrace)(Proc *, int, vlong);
 
 ulong
@@ -172,4 +175,20 @@ printureg(Ureg *ureg)
 	print("R8  %.8ulx R9  %.8ulx R10 %.8ulx R11 %.8ulx\n", ureg->r8, ureg->r9, ureg->r10, ureg->r11);
 	print("R12 %.8ulx R13 %.8ulx R14 %.8ulx R15 %.8ulx\n", ureg->r12, ureg->r13, ureg->r14, ureg->pc);
 	print("PSR %.8ulx exception %ld\n", ureg->psr, ureg->type);
+}
+
+int
+archether(unsigned ctlrno, Ether *ether)
+{
+	switch(ctlrno) {
+	case 0:
+		/* there's no built-in ether on the beagle but igepv2 has 1 */
+		ether->type = "9118";
+		ether->ctlrno = ctlrno;
+		ether->irq = 47;
+		ether->nopt = 0;
+		ether->mbps = 100;
+		return 1;
+	}
+	return -1;
 }
