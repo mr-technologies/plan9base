@@ -34,6 +34,7 @@ dev
 link
 #	archoma
 	ethermedium
+	ether9118
 #	flashigep
 #	loopbackmedium
 	netdevmedium
