@@ -268,7 +268,7 @@ noted(Ureg *ureg, ulong arg0)
 void
 trap(Ureg *ureg)
 {
-	int user, intn, x;
+	int user, intn, x, rv;
 	char buf[ERRMAX];
 
 	user = (ureg->psr & PsrMask) == PsrMusr;
@@ -296,6 +296,22 @@ trap(Ureg *ureg)
 		if(up && up->delaysched && (intn == 29)){
 			sched();
 			splhi();
+		}
+		break;
+	case 1:
+		if (user) {
+			x = spllo();
+			rv = fpiarm(ureg);	
+			splx(x);
+			if (rv == 0) {
+				spllo();
+				sprint("sys: trap: %s", trapname[ureg->type]);
+				postnote(up, 1, buf, NDebug);
+			}
+		} else {
+			serialoq = nil;
+			printureg(ureg);
+			panic("%s", trapname[ureg->type]);
 		}
 		break;
 	default:
