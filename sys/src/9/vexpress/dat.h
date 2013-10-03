@@ -33,11 +33,15 @@ struct Label
 	ulong pc;
 };
 
+enum{
+	Nfpctlregs = 16,
+};
+
 struct FPsave
 {
 	ulong status;
 	ulong control;
-	ulong regs[8][3];
+	ulong regs[Nfpctlregs][3];
 	int fpstate;
 };
 
