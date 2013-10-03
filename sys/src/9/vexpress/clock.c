@@ -70,6 +70,7 @@ perfticks(void)
 void
 clocktick(Ureg* ureg, void *)
 {
+	local[3]=1;
 	timerintr(ureg, 0);
 }
 
