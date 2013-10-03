@@ -194,3 +194,9 @@ rdb()
 	panic("rdb");
 }
 
+int
+isaconfig(char *class, int ctlrno, ISAConf *isa)
+{
+	return 1;
+}
+
