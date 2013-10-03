@@ -764,7 +764,7 @@ smcdetach(Ctlr* ctlr)
 	case Vid9118:
 		break;
 	default:
-		print("smc: unknown chip id %#ux\n", regs->rev_id>>16);
+		print("smc: unknown chip id %#ux\n", (unsigned)regs->rev_id>>16);
 		return -1;
 	}
 	regs->inten = 0;		/* no interrupts */
@@ -815,7 +815,7 @@ smcreset(Ctlr* ctlr)
 	case Vid9118:
 		break;
 	default:
-		print("smc: unknown chip id %#ux\n", regs->rev_id>>16);
+		print("smc: unknown chip id %#ux\n", (unsigned)regs->rev_id>>16);
 		return -1;
 	}
 	if (regs->bytetest != 0x87654321) {
