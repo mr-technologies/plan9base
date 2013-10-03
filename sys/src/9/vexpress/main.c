@@ -197,6 +197,9 @@ rdb()
 int
 isaconfig(char *class, int ctlrno, ISAConf *isa)
 {
+	USED(class);
+	USED(ctlrno);
+	USED(isa);
 	return 1;
 }
 
