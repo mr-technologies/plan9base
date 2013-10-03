@@ -40,7 +40,7 @@ boot(int argc, char *argv[])
 
 	/* setup the boot namespace */
 	bind("/boot", "/bin", MAFTER);
-	run("/bin/paqfs", "-q", "-c", "8", "-m" "/root", "/boot/bootfs.paq", nil);
+	run("/bin/paqfs", "-q", "-a", "-c", "8", "-m" "/root", "/boot/bootfs.paq", nil);
 	bind("/root", "/", MAFTER);
 	snprint(buf, sizeof(buf), "/%s/bin", cputype);
 	bind(buf, "/bin", MAFTER);
