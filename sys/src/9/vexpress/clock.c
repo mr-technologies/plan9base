@@ -6,9 +6,6 @@
 #include "fns.h"
 #include "io.h"
 
-extern ulong *uart;
-#define wave(x) (*uart = (char) (x))
-
 static ulong globalcycleshi,globalcycleslo;
 
 extern uchar *periph;
