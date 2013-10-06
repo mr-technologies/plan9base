@@ -622,8 +622,8 @@ smcreceive(Ether *edev)
 		len = (sts & Rxpktlenmask) >> Rxpktlenshift;
 		if (len > ETHERMAXTU + Slop)
 			iprint("smcreceive: oversized rx pkt (%d)\n", len);
-		else if (len < ETHERMINTU)
-			iprint("smcreceive: too-short (%d) pkt\n", len);
+		/* else if (len < ETHERMINTU) */
+		/* 	iprint("smcreceive: too-short (%d) pkt\n", len); */
 		wds = ROUNDUP(len, sizeof(ulong)) / sizeof(ulong);
 		if (wds > 0) {
 			/* copy aligned words from rx fifo into a Block */
