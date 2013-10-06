@@ -32,15 +32,13 @@ globalclockinit(void)
 void
 cycles(uvlong *x)
 {
-	ulong lo, *y;
+	ulong lo;
 	lo = ~local[9];
 	if (lo < globalcycleslo) {
 		++globalcycleshi;
 	}
 	globalcycleslo=lo;
-	y = (ulong *) x;
-	y[0] = lo;
-	y[1] = globalcycleshi;
+	*x = (uvlong)lo|(((uvlong)globalcycleshi)<<32);
 }
 
 uvlong
