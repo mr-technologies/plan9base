@@ -15,6 +15,7 @@ dev
 #	bridge		log
 #	sdp		thwack unthwack
 	cap
+	rtc
 #	kprof
 #	aoe
 #	sd
