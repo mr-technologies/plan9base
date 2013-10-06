@@ -315,13 +315,3 @@ uartinit(void)
 }
 
 Uart* uartenable(Uart*);
-
-int
-i8250console(void)
-{
-	uartinit();
-	uartenable(consuart);
-	consuart->opens++;
-	uartctl(consuart,"b38400 18 pn r1 s1 i1");
-	return 0;
-}
