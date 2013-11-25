@@ -40,6 +40,9 @@ label: \
 /*
  * new instructions
  */
+#define	LDREX(a,r)	WORD	$(0xe<<28|0x01900f9f | (a)<<16 | (r)<<12)
+#define	STREX(a,v,r)	WORD	$(0xe<<28|0x01800f90 | (a)<<16 | (r)<<12 | (v)<<0)
+#define CLREX		WORD	$0xf57ff01f
 
 #define SMC	WORD	$0xe1600070	/* low 4-bits are call # (trustzone) */
 /* flush branch-target cache; zeroes R0 (cortex) */
