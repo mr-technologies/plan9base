@@ -1,5 +1,5 @@
-CONF=ts
-CONFLIST=ts
+CONF=rikor
+CONFLIST=rikor
 EXTRACOPIES=
 
 # allegedly u-boot uses the bottom 4MB (up to 0x400000) so avoid that,
