@@ -393,11 +393,11 @@ main(void)
 	mmuinit();
 
 	optionsinit("/boot/boot boot");
+
 	quotefmtinstall();
 
 	/* want plan9.ini to be able to affect memory sizing in confinit */
 	plan9iniinit();		/* before we step on plan9.ini in low memory */
-
 	/* l2 looks for *l2off= in plan9.ini */
 	l2cache->on();		/* l2->on requires locks to work, thus smpon */
 	l2cache->info(&cachel[2]);
@@ -409,7 +409,7 @@ main(void)
 	confinit();		/* figures out amount of memory */
 	/* xinit prints (if it can), so finish up the banner here. */
 	delay(100);
-	navailcpus = getncpus();
+	navailcpus = 1; // getncpus();
 	iprint("(mp arm; %d cpus)\n\n", navailcpus);
 	delay(100);
 
