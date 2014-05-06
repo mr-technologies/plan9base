@@ -16,7 +16,7 @@
 #define	STREX(f,tp,r) WORD $(0xe<<28|0x01800f90 | (tp)<<16 | (r)<<12 | (f)<<0)
 
 #define MAXMB	(KiB-1)			/* last MB has vectors */
-#define TMPSTACK (DRAMSIZE - 64*MiB)	/* used only during cpu startup */
+#define TMPSTACK (784*MiB - 64*MiB)	/* used only during cpu startup */
 /* tas/cas strex debugging limits; started at 10000 */
 #define MAXSC 100000
 
@@ -267,10 +267,12 @@ PUTC('m')
 	BL	mmuinvalidate(SB)
 	BL	mmuenable(SB)
 
-PUTC(' ')
+	PUTC(' ')
+	
 	/* warp the PC into the virtual map */
 	MOVW	$KZERO, R0
 	BL	_r15warp(SB)
+	
 	/*
 	 * cpu 0 is now running at KZERO+something!
 	 */
@@ -279,6 +281,7 @@ PUTC(' ')
 	MOVW	$setR12(SB), R12		/* reload kernel SB */
 	MOVW	$(KZERO | TMPSTACK), SP
 
+	
 	BL	cacheuwbinv(SB)
 
 PUTC('B')

@@ -141,6 +141,8 @@ static Uart i8250uart[] = {
 	.next	= nil, },
 };
 
+Uart* consuart = &i8250uart[CONSOLE];
+
 #define csr8r(c, r)	((c)->io[r])
 #define csr8w(c, r, v)	((c)->io[r] = (c)->sticky[r] | (v), coherence())
 #define csr8o(c, r, v)	((c)->io[r] = (v), coherence())
