@@ -133,12 +133,15 @@
 
 #define PHYSDRAM	0
 
-#define PHYSIO		0x50000000	/* cpu */
+#define PHYSIO		0xf1000000	/* cpu */
 #define VIRTIO		PHYSIO
-#define PHYSL2BAG	0x50043000	/* l2 cache bag-on-the-side */
+#define PHYSL2BAG       0xf1008000
+
+
 #define PHYSEVP		0x6000f100	/* undocumented `exception vector' */
-#define PHYSCONS	0x70006000	/* uart console */
-#define PHYSIOEND	0xc0000000	/* end of ahb mem & pcie */
+#define PHYSCONS	0xf1012000	/* uart console */
+
+#define PHYSIOEND	0xfff00000	/* end of ahb mem & pcie */
 
 #define PHYSAHB		0xc0000000	/* ahb bus */
 #define VIRTAHB		0xb0000000

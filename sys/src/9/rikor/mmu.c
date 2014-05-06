@@ -300,7 +300,7 @@ l2pteaddr(PTE *l1, uintptr va)
 	pte = l1[L1X(va)];
 	if ((pte & (Coarse|Section)) != Coarse)
 		panic("l2pteaddr l1 pte %#8.8ux @ %#p not Coarse",
-			pte, &l1[L1X(va)]);
+                      pte, &l1[L1X(va)]);
 	l2pa = pte & ~(KiB - 1);
 	l2 = (PTE *)KADDR(l2pa);
 	return &l2[L2X(va)];
@@ -314,6 +314,7 @@ mmuinit(void)
 	PTE *l1, *l2;
 
 	if (m->machno != 0) {
+          serialputs("C13:",4);
 		mmuninit();
 		return;
 	}
@@ -321,24 +322,30 @@ mmuinit(void)
 	pa = ttbget();
 	l1 = KADDR(pa);
 
+        serialputs("IDM:",4);
 	/* identity map most of the io space */
 	mmuidmap(PHYSIO, (PHYSIOEND - PHYSIO + MB - 1) / MB);
 	/* move the rest to more convenient addresses */
+        serialputs("NOR:",4);
 	mmumap(VIRTNOR, PHYSNOR, 256);	/* 0x40000000 v -> 0xd0000000 p */
+        serialputs("AHB:",4);
 	mmumap(VIRTAHB, PHYSAHB, 256);	/* 0xb0000000 v -> 0xc0000000 p */
 
+        serialputs("PAH:",4);
 	/* map high vectors to start of dram, but only 4K, not 1MB */
 	pa -= MACHSIZE+BY2PG;		/* page tables must be page aligned */
 	l2 = KADDR(pa);
 	memset(l2, 0, 1024);
+        serialputs("K0L:",4);
 
 	m->mmul1 = l1;		/* used by explode in l2pteaddr */
 
 	/* map private mem region (8K at soc.scu) without sharable bits */
-	va = soc.scu;
-	*l2pteaddr(l1, va) &= ~L2sharable;
-	va += BY2PG;
-	*l2pteaddr(l1, va) &= ~L2sharable;
+	/* va = soc.scu; */
+	/* *l2pteaddr(l1, va) &= ~L2sharable; */
+	/* va += BY2PG; */
+	/* *l2pteaddr(l1, va) &= ~L2sharable; */
+        serialputs("HVT:",4);
 
 	/*
 	 * below (and above!) the vectors in virtual space may be dram.
@@ -351,15 +358,18 @@ mmuinit(void)
 	coherence();
 	l1[L1X(HVECTORS)] = pa | Dom0 | Coarse;	/* l1 -> ttb-machsize-4k */
 
-	/* make kernel text unwritable */
-	for(va = KTZERO; va < (ulong)etext; va += BY2PG)
-		*l2pteaddr(l1, va) |= L2apro;
+        serialputs("KRO:",4);	/* make kernel text unwritable */
+	/* for(va = KTZERO; va < (ulong)etext; va += BY2PG) */
+        /*   *l2pteaddr(l1, va) |= L2apro; */
 
+        serialputs("INV:",4);
 	allcache->wbinv();
+        serialputs("MMU:",4);
 	mmuinvalidate();
 
 	m->mmul1 = l1;
 	coherence();
+        serialputs("1EM:",4);
 	mmul1empty();
 	coherence();
 //	mmudump(l1);			/* DEBUG */

@@ -184,7 +184,7 @@ l2pl310info(Memcache *cp)
 		return;
 
 	l2pl310init();
-	assert((l2p->id >> 24) == 'A');
+	/* assert((l2p->id >> 24) == 'A'); */
 	cp->level = 2;
 	cp->type = Unified;
 	cp->external = Extcache;
