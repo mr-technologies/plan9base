@@ -415,7 +415,7 @@ enum Irqs {
 	/* ... */
 	Cpu15irq	= 15,
 	Glbtmrirq	= 27,
-	Loctmrirq	= 29,
+	Loctmrirq	= 5,
 	Wdtmrirq	= 30,
 
 	/* shared interrupts */
@@ -425,7 +425,7 @@ enum Irqs {
 	Rtcirq		= Ctlr0base + 2,
 
 	Ctlr1base	= (1+1)*32,		/* secondary ctlr */
-	Uartirq		= Ctlr1base + 4,
+	Uartirq		= 41, // Ctlr1base + 4,
 	Tn2irq		= Ctlr1base + 9,	/* tegra timers */
 	Tn3irq		= Ctlr1base + 10,
 	/* +24 is cpu0_pmu_intr, +25 is cpu1_pum_intr */

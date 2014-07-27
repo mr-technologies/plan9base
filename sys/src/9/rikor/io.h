@@ -214,6 +214,21 @@ enum {
 	Vnvidia	= 0x10de,
 	Vrealtek= 0x10ec,
 };
+enum {
+	/* from 88f6281 func'l specs (MV-S104860-00), tables 2 & 3, chapter 2 */
+	Targdram	= 0,		/* ddr sdram */
+	Targflash	= 1,
+	Targcesasram	= 3,		/* security accelerator sram */
+
+	/* attributes */
+	Attrcs0		= 0xe,		/* chip select 0 (low dram) */
+	Attrcs1		= 0xd,		/* chip select 1 (high dram) */
+	Attrbootrom	= 0x1d,
+	Attrspi		= 0x1e,
+	Attrnand	= 0x2f,
+
+	Winenable	= 1<<0,
+};
 
 #define PCIWINDOW	0
 #define PCIWADDR(va)	(PADDR(va)+PCIWINDOW)

@@ -29,7 +29,7 @@ dev
 #	mouse
 
 	uart
-#	usb
+	usb
 
 link
 	archtegra
@@ -38,9 +38,11 @@ link
 	loopbackmedium
 	netdevmedium
 
-	ether8169	ethermii
+#	ether8169	ethermii
 #	usbohci
 #	usbehci		usbehcitegra
+#	usbehci		usbehcikw
+	usbehci		usbehciomap
 
 ip
 	tcp
@@ -53,7 +55,7 @@ ip
 	esp
 
 misc
-	pci
+#	pci
 	rdb
 	coproc
 	v7-arch
@@ -64,6 +66,7 @@ misc
 #	sdaoe		sdscsi
 	syscall
 	syscallfmt
+#	uartpl011
 	uarti8250
 	ucalloc
 	ucallocb

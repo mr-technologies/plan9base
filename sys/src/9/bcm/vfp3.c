@@ -68,16 +68,17 @@ subarch(int impl, uint sa)
 		"VFPv3+ with common VFP subarch v3",
 	};
 
-	if (impl != 'A' || sa >= nelem(armarchs))
+	if (impl != 'A' && impl != 'V' || sa >= nelem(armarchs))
 		return "GOK";
 	else
 		return armarchs[sa];
+
 }
 
 static char *
 implement(uchar impl)
 {
-	if (impl == 'A')
+	if (impl == 'A'||impl=='V')
 		return "arm";
 	else
 		return "unknown";

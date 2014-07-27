@@ -391,21 +391,30 @@ main(void)
 	mach0init();
 	l2pageinit();
 	mmuinit();
+        iprint("Mmu init done\n");
 
 	optionsinit("/boot/boot boot");
 
 	quotefmtinstall();
+        iprint("Quote fmt installed\n");
 
 	/* want plan9.ini to be able to affect memory sizing in confinit */
 	plan9iniinit();		/* before we step on plan9.ini in low memory */
-	/* l2 looks for *l2off= in plan9.ini */
+        iprint("plan9.ini read\n");
+    /* l2 looks for *l2off= in plan9.ini */
 	l2cache->on();		/* l2->on requires locks to work, thus smpon */
+        iprint("L2 cache is on\n");
 	l2cache->info(&cachel[2]);
+        iprint("L2 cache info\n");
 	allcache->on();
+        iprint("Allcache on\n");
 
-	cortexa9cachecfg();
-
+        //	cortexa9cachecfg();
+        iprint("CA9 cache config done\n");
 	trapinit();		/* so confinit can probe memory to size it */
+        iprint("Trapinitted\n");
+        *(ulong*)0xf1020340 = 1;
+        /* delay(5000); */
 	confinit();		/* figures out amount of memory */
 	/* xinit prints (if it can), so finish up the banner here. */
 	delay(100);
@@ -454,11 +463,11 @@ main(void)
 //	screeninit();
 
 	iprint("pcireset...");
-	pcireset();			/* this tends to hang after a reboot */
+	//pcireset();			/* this tends to hang after a reboot */
 	iprint("ok\n");
 
 	chandevreset();			/* most devices are discovered here */
-//	i8250console();			/* too early; see init0 */
+	// i8250console();			/* too early; see init0 */
 
 	pageinit();			/* prints "1020M memory: ⋯ */
 	swapinit();
@@ -614,7 +623,7 @@ reboot(void *entry, void *code, ulong size)
 	/*
 	 * should be the only processor running now
 	 */
-	pcireset();
+	//pcireset();
 //	print("reboot entry %#lux code %#lux size %ld\n",
 //		PADDR(entry), PADDR(code), size);
 
@@ -646,6 +655,7 @@ reboot(void *entry, void *code, ulong size)
 	iprint("loaded kernel returned!\n");
 	archreboot();
 }
+extern void uartkirkwoodconsole(void);
 
 /*
  *  starting place for first process
@@ -671,12 +681,15 @@ init0(void)
 
 	chandevinit();
 	i8250console();		/* might be redundant, but harmless */
+
+	//uartkirkwoodconsole();
 	if(serialoq == nil)
 		panic("init0: nil serialoq");
 	normalprint = 1;
 
 	if(!waserror()){
 		snprint(buf, sizeof(buf), "%s %s", "ARM", conffile);
+		ksetenv("console","0",0);
 		ksetenv("terminal", buf, 0);
 		ksetenv("cputype", "arm", 0);
 		if(cpuserver)

@@ -6,6 +6,8 @@ $objtype
 			kbdfs
 		bind
 		cat
+		cows
+		gohello
 		cfs
 		cryptsetup
 		dd

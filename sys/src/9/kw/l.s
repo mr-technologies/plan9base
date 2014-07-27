@@ -52,11 +52,11 @@ _dwbinv0:
 	BARRIERS
 
 	/* make the l2 cache pay attention */
-	MOVW	$(PHYSIO+0x20100), R1	/* CPUCSREG */
-	MOVW	(4*10)(R1), R2
-	ORR	$(1<<3), R2		/* cpu->l2cfg |= L2exists */
-	MOVW	R2, (4*10)(R1)
-	ISB
+//	MOVW	$(PHYSIO+0x20100), R1	/* CPUCSREG */
+//	MOVW	(4*10)(R1), R2
+//	ORR	$(1<<3), R2		/* cpu->l2cfg |= L2exists */
+//	MOVW	R2, (4*10)(R1)
+//	ISB
 
 	/* invalidate l2 cache */
 	MCR	CpSC, CpL2, R0, C(CpTESTCFG), C(CpTCl2inv), CpTCl2all

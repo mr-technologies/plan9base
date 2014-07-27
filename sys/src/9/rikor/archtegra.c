@@ -226,17 +226,16 @@ Soc soc = {
 	/* private memory region */
 	.scu	= 0x50040000,
 	/* we got this address from the `cortex-a series programmer's guide'. */
-	.intr	= 0x50040100,		/* per-cpu interface */
-	.glbtmr	= 0x50040200,
-	.loctmr	= 0x50040600,
-	.intrdist=0x50041000,
+	.intr	= 0xf1021070,		/* per-cpu interface */
+	.glbtmr	= 0xf1020340,           /* ARM generic timer */
+	.loctmr	= 0xf1021040,           /* per-cpu local timer */
+	.intrdist=0xf1020a00,
 
-	.uart	= { 0x70006000, 0x70006040,
-		    0x70006200, 0x70006300, 0x70006400, },
+	.uart	= { PHYSCONS,},
 
 	.rtc	= 0x7000e000,
-	.tmr	= { 0x60005000, 0x60005008, 0x60005050, 0x60005058, },
-	.µs	= 0x60005010,
+	.tmr	= { 0xf1020340, 0x60005008, 0x60005050, 0x60005058, },
+	.µs	= 0xf1020348,
 
 	.pci	= 0x80000000,
 	.ether	= 0xa0024000,
@@ -244,7 +243,7 @@ Soc soc = {
 	.nand	= 0x70008000,
 	.nor	= 0x70009000,		/* also VIRTNOR */
 
-	.ehci	= P2VAHB(0xc5000000),	/* 1st of 3 */
+	.ehci	= 0xf1050000,	/* 1st of 3 */
 	.ide	= P2VAHB(0xc3000000),
 
 	.gpio	= { 0x6000d000, 0x6000d080, 0x6000d100, 0x6000d180,
@@ -287,7 +286,7 @@ cputype2name(char *buf, int size)
 	ulong r;
 
 	r = cpidget();			/* main id register */
-	assert((r >> 24) == 'A');
+	// assert((r >> 24) == 'A');
 	seprint(buf, buf + size, "Cortex-A9 r%ldp%ld",
 		(r >> 20) & MASK(4), r & MASK(4));
 	return buf;
@@ -300,7 +299,7 @@ errata(void)
 
 	/* apply cortex-a9 errata workarounds */
 	r = cpidget();			/* main id register */
-	assert((r >> 24) == 'A');
+	// assert((r >> 24) == 'A');
 	p = r & MASK(4);		/* minor revision */
 	r >>= 20;
 	r &= MASK(4);			/* major revision */
@@ -743,9 +742,6 @@ void
 sgintr(Ureg *ureg, void *)
 {
 	iprint("cpu%d: got sgi\n", m->machno);
-	/* try to prod cpu1 into life when it gets stuck */
-	if (m->machno != 0)
-		clockprod(ureg);
 }
 
 void
@@ -763,7 +759,7 @@ archreset(void)
 
 	prcachecfg();
 
-	clockson();
+	// clockson();
 	/* all partitions were powered up by u-boot, so needn't do anything */
 	archconfinit();
 //	resetusb();

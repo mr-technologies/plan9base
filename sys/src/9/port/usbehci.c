@@ -1107,7 +1107,7 @@ isodump(Isoio* iso, int all)
 }
 
 static void
-dump(Hci *hp)
+dumpa(Hci *hp)
 {
 	int i;
 	char *s, *se;
@@ -2950,7 +2950,7 @@ epopen(Ep *ep)
 	}
 	coherence();
 	if(ehcidebug>1 || ep->debug)
-		dump(ep->hp);
+		dumpa(ep->hp);
 	deprint("ehci: epopen done\n");
 	poperror();
 }
@@ -3261,7 +3261,7 @@ init(Hci *hp)
 		opio->portsc[i] = Pspower;
 	iunlock(ctlr);
 	if(ehcidebug > 1)
-		dump(hp);
+		dumpa(hp);
 	ctlrno++;
 }
 
@@ -3269,7 +3269,7 @@ void
 ehcilinkage(Hci *hp)
 {
 	hp->init = init;
-	hp->dump = dump;
+	hp->dump = dumpa;
 	hp->interrupt = interrupt;
 	hp->epopen = epopen;
 	hp->epclose = epclose;
