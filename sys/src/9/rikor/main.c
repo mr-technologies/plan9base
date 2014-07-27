@@ -400,8 +400,7 @@ main(void)
 
 	/* want plan9.ini to be able to affect memory sizing in confinit */
 	plan9iniinit();		/* before we step on plan9.ini in low memory */
-        iprint("plan9.ini read\n");
-    /* l2 looks for *l2off= in plan9.ini */
+	/* l2 looks for *l2off= in plan9.ini */
 	l2cache->on();		/* l2->on requires locks to work, thus smpon */
         iprint("L2 cache is on\n");
 	l2cache->info(&cachel[2]);

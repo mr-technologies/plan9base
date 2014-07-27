@@ -314,6 +314,7 @@ mmuinit(void)
 	PTE *l1, *l2;
 
 	if (m->machno != 0) {
+          serialputs("C13:",4);
 		mmuninit();
 		return;
 	}
@@ -321,12 +322,16 @@ mmuinit(void)
 	pa = ttbget();
 	l1 = KADDR(pa);
 
+        serialputs("IDM:",4);
 	/* identity map most of the io space */
 	mmuidmap(PHYSIO, (PHYSIOEND - PHYSIO + MB - 1) / MB);
 	/* move the rest to more convenient addresses */
+        serialputs("NOR:",4);
 	mmumap(VIRTNOR, PHYSNOR, 256);	/* 0x40000000 v -> 0xd0000000 p */
+        serialputs("AHB:",4);
 	mmumap(VIRTAHB, PHYSAHB, 256);	/* 0xb0000000 v -> 0xc0000000 p */
 
+        serialputs("PAH:",4);
 	/* map high vectors to start of dram, but only 4K, not 1MB */
 	pa -= MACHSIZE+BY2PG;		/* page tables must be page aligned */
 	l2 = KADDR(pa);
