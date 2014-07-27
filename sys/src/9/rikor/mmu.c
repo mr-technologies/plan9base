@@ -314,7 +314,6 @@ mmuinit(void)
 	PTE *l1, *l2;
 
 	if (m->machno != 0) {
-          serialputs("C13:",4);
 		mmuninit();
 		return;
 	}
@@ -322,16 +321,12 @@ mmuinit(void)
 	pa = ttbget();
 	l1 = KADDR(pa);
 
-        serialputs("IDM:",4);
 	/* identity map most of the io space */
 	mmuidmap(PHYSIO, (PHYSIOEND - PHYSIO + MB - 1) / MB);
 	/* move the rest to more convenient addresses */
-        serialputs("NOR:",4);
 	mmumap(VIRTNOR, PHYSNOR, 256);	/* 0x40000000 v -> 0xd0000000 p */
-        serialputs("AHB:",4);
 	mmumap(VIRTAHB, PHYSAHB, 256);	/* 0xb0000000 v -> 0xc0000000 p */
 
-        serialputs("PAH:",4);
 	/* map high vectors to start of dram, but only 4K, not 1MB */
 	pa -= MACHSIZE+BY2PG;		/* page tables must be page aligned */
 	l2 = KADDR(pa);
@@ -359,17 +354,21 @@ mmuinit(void)
 	l1[L1X(HVECTORS)] = pa | Dom0 | Coarse;	/* l1 -> ttb-machsize-4k */
 
         serialputs("KRO:",4);	/* make kernel text unwritable */
-	/* for(va = KTZERO; va < (ulong)etext; va += BY2PG) */
-        /*   *l2pteaddr(l1, va) |= L2apro; */
+	for(va = KTZERO; va < (ulong)etext; va += BY2PG)
+          *l2pteaddr(l1, va) |= L2apro;
 
+        iprint("l2pte(KTZERO) = %#lux\n",l2pteaddr(l1,KTZERO));
+        iprint("l2pte(KTZERO+BY2PG) = %#lux\n",l2pteaddr(l1,KTZERO+BY2PG));
+    
         serialputs("INV:",4);
 	allcache->wbinv();
-        serialputs("MMU:",4);
+        iprint("Mmu invalidate\n");
 	mmuinvalidate();
 
+        iprint("Mmu L1 assign\n");
 	m->mmul1 = l1;
 	coherence();
-        serialputs("1EM:",4);
+        iprint("Mmu L1 empty\n");
 	mmul1empty();
 	coherence();
 //	mmudump(l1);			/* DEBUG */

@@ -76,7 +76,7 @@ enum {					/* Mcr */
 	Dtr		= 0x01,		/* Data Terminal Ready */
 	Rts		= 0x02,		/* Ready To Send */
 	Out1		= 0x04,		/* no longer in use */
-//	Ie		= 0x08,		/* IRQ Enable (cd_sts_ch on omap) */
+	Ie		= 0x08,		/* IRQ Enable (cd_sts_ch on omap) */
 	Dm		= 0x10,		/* Diagnostic Mode loopback */
 };
 
@@ -138,6 +138,10 @@ static Uart i8250uart[] = {
 	.freq	= 3686000,	/* Not used, we use the global i8250freq */
 	.phys	= &i8250physuart,
 	.console= 1,
+	.bits = 8,
+	.stop = 1,
+	.baud = 115200,
+	.parity = 'n',
 	.next	= nil, },
 };
 
@@ -487,7 +491,21 @@ i8250kick(Uart* uart)
 void
 serialkick(void)
 {
-	uartkick(&i8250uart[CONSOLE]);
+	Ctlr *ctlr;
+	int iir, lsr, old, r;
+	Uart *uart = &i8250uart[CONSOLE];
+	ctlr = uart->regs;
+	while((lsr = csr8r(ctlr, Lsr)) & Dr){
+		if(lsr & (FIFOerr|Oe))
+			uart->oerr++;
+		if(lsr & Pe)
+			uart->perr++;
+		if(lsr & Fe)
+			uart->ferr++;
+		r = csr8r(ctlr, Rbr);
+		uartrecv(uart, r&0xFF);
+	}
+	uartkick(uart);
 }
 
 static void
@@ -530,6 +548,7 @@ i8250interrupt(Ureg*, void* arg)
 		case Irda:		/* Received Data Available */
 		case Irls:		/* Receiver Line Status */
 		case Ictoi:		/* Character Time-out Indication */
+			uartkick(uart);
 			/*
 			 * Consume any received data.
 			 * If the received byte came in with a break,
@@ -616,7 +635,7 @@ i8250enable(Uart* uart, int ie)
 		while(!(csr8r(ctlr, Lsr) & Temt))
 			;
 		csr8w(ctlr, Fcr, FIFOena);
-		if(csr8r(ctlr, Iir) & Ifena)
+		// if(csr8r(ctlr, Iir) & Ifena)
 			ctlr->hasfifo = 1;
 		csr8w(ctlr, Fcr, 0);
 		ctlr->checkfifo = 1;
@@ -635,8 +654,8 @@ i8250enable(Uart* uart, int ie)
 			ctlr->iena = 1;
 		}
 		ctlr->sticky[Ier] = Erda;
-//		ctlr->sticky[Mcr] |= Ie;		/* not on omap */
-		ctlr->sticky[Mcr] = 0;
+		ctlr->sticky[Mcr] |= Ie;		/* not on omap */
+//		ctlr->sticky[Mcr] = 0;
 	}
 	else{
 		ctlr->sticky[Ier] = 0;
@@ -656,8 +675,8 @@ i8250enable(Uart* uart, int ie)
 	 * interrupt handler to clear any pending interrupt events.
 	 * Note: this must be done after setting Ier.
 	 */
-	if(ie)
-		i8250interrupt(nil, uart);
+//	if(ie)
+//		i8250interrupt(nil, uart);
 }
 
 static Uart*
@@ -779,17 +798,21 @@ int
 i8250console(void)
 {
 	Uart *uart = &i8250uart[CONSOLE];
+	Ctlr *ctlr = uart->regs;
 
 	if (up == nil)
 		return -1;			/* too early */
 
 	if(uartenable(uart) != nil /* && uart->console */){
-		// iprint("i8250console: enabling console uart\n");
+		iprint("i8250console: enabling console uart\n");
 		serialoq = uart->oq;
 		uart->opens++;
+		uart->console = 1;
 		consuart = uart;
 	}
-	uartctl(uart, "b115200 l8 pn r1 s1 i1");
+	/* uartctl(uart, "b115200 l8 pn r1 s1"); */
+	uartctl(uart, "b115200 l8 pn r1 s1 i8 x0");
+	//irqenable(ctlr->irq, i8250interrupt, uart, uart->name);
 	return 0;
 }
 

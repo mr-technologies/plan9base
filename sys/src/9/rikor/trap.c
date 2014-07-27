@@ -37,43 +37,14 @@ enum {
 typedef struct Intrcpuregs Intrcpuregs;
 typedef struct Intrdistregs Intrdistregs;
 
-/*
- * almost this entire register set is buggered.
- * the distributor is supposed to be per-system, not per-cpu,
- * yet some registers are banked per-cpu, as marked.
- */
 struct Intrdistregs {			/* distributor */
 	ulong	ctl;
-	ulong	ctlrtype;
-	ulong	distid;
-	uchar	_pad0[0x80 - 0xc];
-
-	/* botch: *[0] are banked per-cpu from here */
-	/* bit maps */
-	ulong	grp[32];		/* in group 1 (non-secure) */
-	ulong	setena[32];		/* forward to cpu interfaces */
-	ulong	clrena[32];
-	ulong	setpend[32];
-	ulong	clrpend[32];
-	ulong	setact[32];		/* active? */
-	ulong	clract[32];
-	/* botch: *[0] are banked per-cpu until here */
-
-	uchar	pri[1020];	/* botch: pri[0] — pri[7] are banked per-cpu */
-	ulong	_rsrvd1;
-	/* botch: targ[0] through targ[7] are banked per-cpu and RO */
-	uchar	targ[1020];	/* byte bit maps: cpu targets indexed by intr */
-	ulong	_rsrvd2;
-	/* botch: cfg[1] is banked per-cpu */
-	ulong	cfg[64];		/* bit pairs: edge? 1-N? */
-	ulong	_pad1[64];
-	ulong	nsac[64];		/* bit pairs (v2 only) */
-
-	/* software-generated intrs (a.k.a. sgi) */
-	ulong	swgen;			/* intr targets */
-	uchar	_pad2[0xf10 - 0xf04];
-	uchar	clrsgipend[16];		/* bit map (v2 only) */
-	uchar	setsgipend[16];		/* bit map (v2 only) */
+  
+	uchar	_pad0[0x30 - 0x04];
+        ulong   setena;
+        ulong   clrena;
+	uchar	_pad1[0x100 - 0x38];
+        ulong  sourcectl[64];
 };
 
 enum {
@@ -99,30 +70,10 @@ enum {
 
 /* each cpu sees its own registers at the same base address (soc.intr) */
 struct Intrcpuregs {
-	ulong	ctl;
-	ulong	primask;
-
-	ulong	binpt;			/* group pri vs subpri split */
-	ulong	ack;
-	ulong	end;
-	ulong	runpri;
-	ulong	hipripend;
-
-	/* aliased regs (secure, for group 1) */
-	ulong	alibinpt;
-	ulong	aliack;			/* (v2 only) */
-	ulong	aliend;			/* (v2 only) */
-	ulong	alihipripend;		/* (v2 only) */
-
-	uchar	_pad0[0xd0 - 0x2c];
-	ulong	actpri[4];		/* (v2 only) */
-	ulong	nsactpri[4];		/* (v2 only) */
-
-	uchar	_pad0[0xfc - 0xf0];
-	ulong	ifid;			/* ro */
-
-	uchar	_pad0[0x1000 - 0x100];
-	ulong	deact;			/* wo (v2 only) */
+        uchar   _pad0[0x44];
+        ulong   ack;
+        ulong   setmask;
+        ulong   clearmask;
 };
 
 enum {
@@ -196,17 +147,7 @@ dumpintrs(char *what, ulong *bits)
 	first = 1;
 	some = 0;
 	USED(idp);
-	for (i = 0; i < nelem(idp->setpend); i++) {
-		word = bits[i];
-		if (word) {
-			if (first) {
-				first = 0;
-				iprint("%s", what);
-			}
-			some = 1;
-			printrs(i * Bi2long, word);
-		}
-	}
+
 	if (!some)
 		iprint("%s none", what);
 	iprint("\n");
@@ -218,10 +159,7 @@ dumpintrpend(void)
 	Intrdistregs *idp = (Intrdistregs *)soc.intrdist;
 
 	iprint("\ncpu%d gic regs:\n", m->machno);
-	dumpintrs("group 1", idp->grp);
-	dumpintrs("enabled", idp->setena);
-	dumpintrs("pending", idp->setpend);
-	dumpintrs("active ", idp->setact);
+        /* TODO */
 }
 
 /*
@@ -260,16 +198,13 @@ intack(Intrcpuregs *icp)
 static void
 intdismiss(Intrcpuregs *icp, ulong ack)
 {
-	icp->end = ack;
 	coherence();
 }
 
 static int
 irqinuse(uint irq)
 {
-	Intrdistregs *idp = (Intrdistregs *)soc.intrdist;
-
-	return idp->setena[irq / Bi2long] & (1 << (irq % Bi2long));
+        return 0;
 }
 
 void
@@ -278,7 +213,7 @@ intcunmask(uint irq)
 	Intrdistregs *idp = (Intrdistregs *)soc.intrdist;
 
 	ilock(&distlock);
-	idp->setena[irq / Bi2long] = 1 << (irq % Bi2long);
+        idp->setena = irq;
 	iunlock(&distlock);
 }
 
@@ -288,7 +223,7 @@ intcmask(uint irq)
 	Intrdistregs *idp = (Intrdistregs *)soc.intrdist;
 
 	ilock(&distlock);
-	idp->clrena[irq / Bi2long] = 1 << (irq % Bi2long);
+	idp->clrena = irq;
 	iunlock(&distlock);
 }
 
@@ -297,37 +232,16 @@ intcmaskall(Intrdistregs *idp)		/* mask all intrs for all cpus */
 {
 	int i;
 
-	for (i = 0; i < nelem(idp->setena); i++)
-		shadena[i] = idp->setena[i];
-	for (i = 0; i < nelem(idp->clrena); i++)
-		idp->clrena[i] = ~0;
-	coherence();
+	for (i = 0; i < 64; i++) {
+                idp->clrena = i;
+                coherence();
+        }
 }
 
 static void
 intcunmaskall(Intrdistregs *idp)	/* unused */
 {
-	int i;
 
-	for (i = 0; i < nelem(idp->setena); i++)
-		idp->setena[i] = shadena[i];
-	coherence();
-}
-
-static ulong
-permintrs(Intrdistregs *idp, int base, int r)
-{
-	ulong perms;
-
-	idp->clrena[r] = ~0;		/* disable all */
-	coherence();
-	perms = idp->clrena[r];
-	if (perms) {
-		iprint("perm intrs:");
-		printrs(base, perms);
-		iprint("\n");
-	}
-	return perms;
 }
 
 static void
@@ -337,44 +251,44 @@ intrcfg(Intrdistregs *idp)
 	ulong pat;
 
 	/* set up all interrupts as level-sensitive, to one cpu (0) */
-	pat = 0;
-	for (i = 0; i < Bi2long; i += 2)
-		pat |= (Level | To1) << i;
+	/* pat = 0; */
+	/* for (i = 0; i < Bi2long; i += 2) */
+	/* 	pat |= (Level | To1) << i; */
 
-	if (m->machno == 0) {			/* system-wide & cpu0 cfg */
-		for (i = 0; i < nelem(idp->grp); i++)
-			idp->grp[i] = 0;		/* secure */
-		for (i = 0; i < nelem(idp->pri); i++)
-			idp->pri[i] = 0;		/* highest priority */
-		/* set up all interrupts as level-sensitive, to one cpu (0) */
-		for (i = 0; i < nelem(idp->cfg); i++)
-			idp->cfg[i] = pat;
-		/* first Nppi are read-only for SGIs and PPIs */
-		cpumask = 1<<0;				/* just cpu 0 */
-		navailcpus = getncpus();
-		for (i = Nppi; i < sizeof idp->targ; i++)
-			idp->targ[i] = cpumask;
-		coherence();
+	/* if (m->machno == 0) {			/\* system-wide & cpu0 cfg *\/ */
+	/* 	for (i = 0; i < nelem(idp->grp); i++) */
+	/* 		idp->grp[i] = 0;		/\* secure *\/ */
+	/* 	for (i = 0; i < nelem(idp->pri); i++) */
+	/* 		idp->pri[i] = 0;		/\* highest priority *\/ */
+	/* 	/\* set up all interrupts as level-sensitive, to one cpu (0) *\/ */
+	/* 	for (i = 0; i < nelem(idp->cfg); i++) */
+	/* 		idp->cfg[i] = pat; */
+	/* 	/\* first Nppi are read-only for SGIs and PPIs *\/ */
+	/* 	cpumask = 1<<0;				/\* just cpu 0 *\/ */
+	/* 	navailcpus = getncpus(); */
+	/* 	for (i = Nppi; i < sizeof idp->targ; i++) */
+	/* 		idp->targ[i] = cpumask; */
+	/* 	coherence(); */
 
-		intcmaskall(idp);
-		for (i = 0; i < nelem(idp->clrena); i++) {
-			// permintrs(idp, i * Bi2long, i);
-			idp->clrpend[i] = idp->clract[i] = idp->clrena[i] = ~0;
-		}
-	} else {				/* per-cpu config */
-		idp->grp[0] = 0;		/* secure */
-		for (i = 0; i < 8; i++)
-			idp->pri[i] = 0;	/* highest priority */
-		/* idp->targ[0 through Nppi-1] are supposed to be read-only */
-		for (i = 0; i < Nppi; i++)
-			idp->targ[i] = 1<<m->machno;
-		idp->cfg[1] = pat;
-		coherence();
+	/* 	intcmaskall(idp); */
+	/* 	for (i = 0; i < nelem(idp->clrena); i++) { */
+	/* 		// permintrs(idp, i * Bi2long, i); */
+	/* 		idp->clrpend[i] = idp->clract[i] = idp->clrena[i] = ~0; */
+	/* 	} */
+	/* } else {				/\* per-cpu config *\/ */
+	/* 	idp->grp[0] = 0;		/\* secure *\/ */
+	/* 	for (i = 0; i < 8; i++) */
+	/* 		idp->pri[i] = 0;	/\* highest priority *\/ */
+	/* 	/\* idp->targ[0 through Nppi-1] are supposed to be read-only *\/ */
+	/* 	for (i = 0; i < Nppi; i++) */
+	/* 		idp->targ[i] = 1<<m->machno; */
+	/* 	idp->cfg[1] = pat; */
+	/* 	coherence(); */
 
-		// permintrs(idp, i * Bi2long, i);
-		idp->clrpend[0] = idp->clract[0] = idp->clrena[0] = ~0;
-		/* on cpu1, irq Extpmuirq (118) is always pending here */
-	}
+	/* 	// permintrs(idp, i * Bi2long, i); */
+	/* 	idp->clrpend[0] = idp->clract[0] = idp->clrena[0] = ~0; */
+	/* 	/\* on cpu1, irq Extpmuirq (118) is always pending here *\/ */
+	/* } */
 	coherence();
 }
 
@@ -385,7 +299,7 @@ intrto(int cpu, int irq)
 
 	/* first Nppi are read-only for SGIs and the like */
 	ilock(&distlock);
-	idp->targ[irq] = 1 << cpu;
+	/* idp->targ[irq] = 1 << cpu; */
 	iunlock(&distlock);
 }
 
@@ -396,8 +310,8 @@ intrsto(int cpu)			/* unused */
 	Intrdistregs *idp = (Intrdistregs *)soc.intrdist;
 
 	/* first Nppi are read-only for SGIs and the like */
-	for (i = Nppi; i < sizeof idp->targ; i++)
-		intrto(cpu, i);
+	/* for (i = Nppi; i < sizeof idp->targ; i++) */
+	/* 	intrto(cpu, i); */
 	USED(idp);
 }
 
@@ -407,7 +321,7 @@ intrcpu(int cpu)
 	Intrdistregs *idp = (Intrdistregs *)soc.intrdist;
 
 	ilock(&distlock);
-	idp->swgen = Totargets | 1 << (cpu + 16) | m->machno;
+	/* idp->swgen = Totargets | 1 << (cpu + 16) | m->machno; */
 	iunlock(&distlock);
 }
 
@@ -450,28 +364,31 @@ trapinit(void)
 	s = splhi();			/* make these modes ignore intrs too */
 	setr13(PsrMfiq, m->sfiq);
 	setr13(PsrMirq, m->sirq);
-	setr13(PsrMmon, m->smon);
+	//setr13(PsrMmon, m->smon);
 	setr13(PsrMabt, m->sabt);
 	setr13(PsrMund, m->sund);
 	setr13(PsrMsys, m->ssys);
 	splx(s);
 
-	assert((idp->distid & MASK(12)) == 0x43b);	/* made by arm */
-	assert((icp->ifid   & MASK(12)) == 0x43b);	/* made by arm */
+        iprint("trapinit: before distlock\n");
+    
+        //	assert((idp->distid & MASK(12)) == 0x43b);	/* made by arm */
+        //	assert((icp->ifid   & MASK(12)) == 0x43b);	/* made by arm */
 
 	ilock(&distlock);
-	idp->ctl = 0;
-	icp->ctl = 0;
+	//idp->ctl = 0;
+	//icp->ctl = 0;
 	coherence();
 
-	intrcfg(idp);			/* some per-cpu cfg here */
+       	//intrcfg(idp);			/* some per-cpu cfg here */
 
-	icp->ctl = Enable;
-	icp->primask = (uchar)~0;	/* let all priorities through */
+	//icp->ctl = Enable;
+	//icp->primask = (uchar)~0;	/* let all priorities through */
 	coherence();
 
-	idp->ctl = Forw2cpuif;
+	//idp->ctl = Forw2cpuif;
 	iunlock(&distlock);
+        iprint("trapinit: after distlock\n");
 }
 
 void
@@ -487,8 +404,8 @@ intrcpushutdown(void)
 {
 	Intrcpuregs *icp = (Intrcpuregs *)soc.intr;
 
-	icp->ctl = 0;
-	icp->primask = 0;	/* let no priorities through */
+	/* icp->ctl = 0; */
+	/* icp->primask = 0;	/\* let no priorities through *\/ */
 	coherence();
 }
 
@@ -511,6 +428,7 @@ int
 irqenable(uint irq, void (*f)(Ureg*, void*), void* a, char *name)
 {
 	Vctl *v;
+	Intrcpuregs *icp = (Intrcpuregs *)soc.intr;
 
 	if(irq >= nelem(vctl))
 		panic("irqenable irq %d", irq);
@@ -555,7 +473,9 @@ irqenable(uint irq, void (*f)(Ureg*, void*), void* a, char *name)
 		}
 		unlock(&vctllock);
 	}
+	icp->clearmask = irq;
 	intcunmask(irq);
+	iprint("Enabled irq %d for %s\n",irq,name);
 	return 0;
 }
 
@@ -637,10 +557,10 @@ irq(Ureg* ureg)
 	Intrcpuregs *icp = (Intrcpuregs *)soc.intr;
 	Vctl *v;
 
-	ticks = perfticks();
 	handled = 0;
 	ack = intack(icp);
 	irqno = ack & Intrmask;
+	ticks = perfticks();
 
 	if (irqno >= nelem(vctl)) {
 		iprint("trap: irq %d >= # vectors (%d)\n", irqno, nelem(vctl));

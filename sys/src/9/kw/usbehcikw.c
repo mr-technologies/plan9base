@@ -71,7 +71,7 @@ struct Kwusb {			/* at offset 0x300 from soc.ehci */
 
 static Ctlr* ctlrs[Nhcis];
 
-static void
+	static void
 addrmapdump(void)
 {
 	int i;
@@ -90,14 +90,14 @@ addrmapdump(void)
 			attr = WINATTR(ctl);
 			size64k = WIN64KSIZE(ctl);
 			print("usbehci: address map window %d: "
-				"targ %ld attr %#lux size %,ld addr %#lux\n",
-				i, targ, attr, size64k * 64*1024, win->base);
+					"targ %ld attr %#lux size %,ld addr %#lux\n",
+					i, targ, attr, size64k * 64*1024, win->base);
 		}
 	}
 }
 
 /* assumes ctlr is ilocked */
-static void
+	static void
 ctlrreset(Ctlr *ctlr)
 {
 	int i;
@@ -124,7 +124,7 @@ ctlrreset(Ctlr *ctlr)
  * configure window `win' as 256MB dram with attribute `attr' and
  * base address
  */
-static void
+	static void
 setaddrwin(Kwusb *kw, int win, int attr, ulong base)
 {
 	kw->win[win].ctl = Winenable | Targdram << 4 | attr << 8 |
@@ -132,7 +132,7 @@ setaddrwin(Kwusb *kw, int win, int attr, ulong base)
 	kw->win[win].base = base;
 }
 
-static void
+	static void
 ehcireset(Ctlr *ctlr)
 {
 	int i, amp, txvdd;
@@ -161,17 +161,17 @@ ehcireset(Ctlr *ctlr)
 	/* requesting more interrupts per µframe may miss interrupts */
 	opio->cmd |= Citc8;		/* 1 intr. per ms */
 	switch(opio->cmd & Cflsmask){
-	case Cfls1024:
-		ctlr->nframes = 1024;
-		break;
-	case Cfls512:
-		ctlr->nframes = 512;
-		break;
-	case Cfls256:
-		ctlr->nframes = 256;
-		break;
-	default:
-		panic("ehci: unknown fls %ld", opio->cmd & Cflsmask);
+		case Cfls1024:
+			ctlr->nframes = 1024;
+			break;
+		case Cfls512:
+			ctlr->nframes = 512;
+			break;
+		case Cfls256:
+			ctlr->nframes = 256;
+			break;
+		default:
+			panic("ehci: unknown fls %ld", opio->cmd & Cflsmask);
 	}
 	dprint("ehci: %d frames\n", ctlr->nframes);
 

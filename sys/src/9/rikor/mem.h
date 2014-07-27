@@ -141,7 +141,7 @@
 #define PHYSEVP		0x6000f100	/* undocumented `exception vector' */
 #define PHYSCONS	0xf1012000	/* uart console */
 
-#define PHYSIOEND	0xfff00000	/* end of ahb mem & pcie */
+#define PHYSIOEND	0xf2000000	/* end of ahb mem & pcie */
 
 #define PHYSAHB		0xc0000000	/* ahb bus */
 #define VIRTAHB		0xb0000000

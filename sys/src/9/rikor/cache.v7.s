@@ -176,10 +176,10 @@ TEXT wholecache+0(SB), $-4
 	MOVW	(R3), R3
 	MOVW	(R4), R4
 
-	CMP	$0, R3		/* sanity checks */
-	BEQ	wbuggery
-	CMP	$0, R4
-	BEQ	sbuggery
+//	CMP	$0, R3		/* sanity checks */
+//	BEQ	wbuggery
+//	CMP	$0, R4
+//	BEQ	sbuggery
 
 	CPSID			/* splhi to make entire op atomic */
 	BARRIERS

@@ -27,7 +27,6 @@ boot(int argc, char *argv[])
 
 	if(Debug){
 		int i;
-
 		print("argc=%d\n", argc);
 		for(i = 0; i < argc; i++)
 			print("%lux %s ", (ulong)argv[i], argv[i]);

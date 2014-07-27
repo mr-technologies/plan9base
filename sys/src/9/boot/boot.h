@@ -1,5 +1,5 @@
 enum {
-	Debug = 0,
+	Debug = 1,
 };
 
 extern char*	bootdisk;
