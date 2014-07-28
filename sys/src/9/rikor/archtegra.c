@@ -15,7 +15,6 @@
 #include "etherif.h"
 #include "../port/flashif.h"
 #include "../port/usb.h"
-#include "../port/portusbehci.h"
 #include "usbehci.h"
 
 enum {
