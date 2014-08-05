@@ -165,12 +165,12 @@ reset(Hci *hp)
 	 * don't bother with vmap; i/o space is all mapped anyway,
 	 * and a size less than 1MB will blow an assertion in mmukmap.
 	 */
-	ctlr->capio = capio = (Ecapio *)PHYSEHCI;
-	ctlr->opio = opio = (Eopio*)((uintptr)capio + (capio->cap & 0xff));
+        ctlr->capio = capio = (Ecapio *)(PHYSEHCI+0x100);
+        ctlr->opio = opio = (Eopio*)(PHYSEHCI+0x140);
 
 	hp->aux = ctlr;
 	hp->port = (uintptr)ctlr->capio;
-	hp->irq = 77;
+	hp->irq = 45;
 	hp->nports = capio->parms & Cnports;
 
 	ddprint("echi: %s, ncc %lud npcc %lud\n",
