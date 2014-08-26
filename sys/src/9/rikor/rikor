@@ -29,7 +29,7 @@ dev
 #	mouse
 
 	uart
-	usb
+#	usb
 
 link
 	archtegra
@@ -42,7 +42,7 @@ link
 #	usbohci
 #	usbehci		usbehcitegra
 #	usbehci		usbehcikw
-	usbehci		usbehciomap
+#	usbehci		usbehciomap
 
 ip
 	tcp
