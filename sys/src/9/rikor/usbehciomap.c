@@ -14,7 +14,7 @@
 #include	"../port/usb.h"
 #include	"usbehci.h"
 
-#define PHYSEHCI 0xf1050000
+#define PHYSEHCI 0xf1052000
 
 static Ctlr* ctlrs[Nhcis];
 
@@ -170,7 +170,7 @@ reset(Hci *hp)
 
 	hp->aux = ctlr;
 	hp->port = (uintptr)ctlr->capio;
-	hp->irq = 45;
+	hp->irq = 47;
 	hp->nports = capio->parms & Cnports;
 
 	ddprint("echi: %s, ncc %lud npcc %lud\n",
@@ -213,7 +213,7 @@ reset(Hci *hp)
 	hp->shutdown = shutdown;
 	hp->debug = setdebug;
 
-	intrenable(45, hp->interrupt, hp, UNKNOWN, "usbtll");
+	intrenable(47, hp->interrupt, hp, UNKNOWN, "usbtll");
 //	intrenable(92, hp->interrupt, hp, UNKNOWN, "usb otg");
 //	intrenable(93, hp->interrupt, hp, UNKNOWN, "usb otg dma");
 
