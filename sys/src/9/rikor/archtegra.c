@@ -242,7 +242,7 @@ Soc soc = {
 	.nand	= 0x70008000,
 	.nor	= 0x70009000,		/* also VIRTNOR */
 
-	.ehci	= 0xf1050000,	/* 1st of 3 */
+	.ehci	= 0xf1052000,	/* 1st of 3 */
 	.ide	= P2VAHB(0xc3000000),
 
 	.gpio	= { 0x6000d000, 0x6000d080, 0x6000d100, 0x6000d180,
