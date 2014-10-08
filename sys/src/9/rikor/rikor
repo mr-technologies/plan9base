@@ -41,8 +41,8 @@ link
 #	ether8169	ethermii
 #	usbohci
 #	usbehci		usbehcitegra
-#	usbehci		usbehcikw
-	usbehci		usbehciomap
+	usbehci		usbehcikw
+#	usbehci		usbehciomap
 
 ip
 	tcp
